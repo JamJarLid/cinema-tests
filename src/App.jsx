@@ -4,7 +4,8 @@ import { useEffect } from 'react';
 import { get, post, del } from './utilities/backend-talk';
 
 export default function App() {
-
+  /// hello everybody :) 
+  let my = "name";
   // Crammed a lot of things together in one component
   // since focus is demo of backend REST api
 
