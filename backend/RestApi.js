@@ -5,6 +5,9 @@
 // Note: Do NOT use in production before you
 // write logic that limits access in  tHE Acl.js file :)
 
+const crypto = require('crypto');
+const { passwordSalt } = require('../settings.json');
+
 const Acl = require('./Acl');
 const Login = require('./Login');
 
@@ -100,16 +103,6 @@ module.exports = class RestApi {
       x[0] === '-' ? x.slice(1) + ' DESC' : x);
     id && (urlQueryParams = { id });
     let [where, whereVals] = this.whereFromParams(urlQueryParams, ors);
-    console.log(`
-        SELECT * FROM ${tableName} 
-        ${where ? `WHERE ${where}` : ''}
-        ${sort ? ` ORDER BY ${sort}` : ''}
-        ${limit ? ` LIMIT ${limit}` : ''}
-        ${offset ? ` OFFSET ${offset}` : ''}
-      `,
-      [
-        ...(where ? whereVals : [])
-      ])
     let result = await this.runQuery(res,
       `
         SELECT * FROM ${tableName} 
@@ -130,6 +123,7 @@ module.exports = class RestApi {
 
   async post(tableName, id, req, res) {
     let body = req.body;
+    tableName === 'users' && (body.password = this.encryptPassword(body.password));
     if (id || body.id) {
       res.status(400);
       res.json({ error: 'Do not use id:s with post requests!' });
@@ -144,6 +138,8 @@ module.exports = class RestApi {
 
   async put(tableName, id, req, res) {
     let body = req.body;
+    tableName === 'users' && body.password
+      && (body.password = this.encryptPassword(body.password));
     if (!id) {
       res.status(400);
       res.json({ error: 'You must provide an id in the URL with put requests!' });
@@ -217,6 +213,13 @@ module.exports = class RestApi {
     }
     where = where.join('');
     return [where.slice(5), whereVals];
+  }
+
+  encryptPassword(password) {
+    return crypto
+      .createHmac('sha256', passwordSalt) // choose algorithm and salt
+      .update(password)  // send the string to encrypt
+      .digest('hex'); // decide on output format (in our case hexadecimal)
   }
 
 }
