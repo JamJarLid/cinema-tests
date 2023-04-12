@@ -3,8 +3,8 @@ name: Node.js CI
 # Trigger which git action (push, pull request)
 # in which branch(es) should start the jobs
 on:
-  push:
-    branches: [main]
+  pull_request:
+    branches: [main, dev]
 
 # Jobs to run
 jobs:
