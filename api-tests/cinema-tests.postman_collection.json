@@ -1,0 +1,267 @@
+{
+	"info": {
+		"_postman_id": "5f7849fc-04fb-49d3-b785-11004454aa9f",
+		"name": "Cinema-tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24654429"
+	},
+	"item": [
+		{
+			"name": "Create users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let initialMockData = [{",
+							"  \"email\": \"aabelson0@epa.gov\",",
+							"  \"password\": \"gvwBrSV7g0\",",
+							"  \"firstName\": \"Adriaens\",",
+							"  \"lastName\": \"Abelson\",",
+							"  \"phoneNumber\": \"964-924-3550\"",
+							"}, {",
+							"  \"email\": \"cvergine1@163.com\",",
+							"  \"password\": \"4oC9T7NV\",",
+							"  \"firstName\": \"Codee\",",
+							"  \"lastName\": \"Vergine\",",
+							"  \"phoneNumber\": \"669-249-4296\"",
+							"}, {",
+							"  \"email\": \"fdequesne2@nymag.com\",",
+							"  \"password\": \"3Jz32uYSDZeC\",",
+							"  \"firstName\": \"Farly\",",
+							"  \"lastName\": \"de Quesne\",",
+							"  \"phoneNumber\": \"996-179-9570\"",
+							"}, {",
+							"  \"email\": \"jthow3@admin.ch\",",
+							"  \"password\": \"sfPKicwLm5\",",
+							"  \"firstName\": \"Jerrie\",",
+							"  \"lastName\": \"Thow\",",
+							"  \"phoneNumber\": \"421-322-8629\"",
+							"}, {",
+							"  \"email\": \"lmeany4@phoca.cz\",",
+							"  \"password\": \"UzMxOG\",",
+							"  \"firstName\": \"Lindsey\",",
+							"  \"lastName\": \"Meany\",",
+							"  \"phoneNumber\": \"725-106-7806\"",
+							"}]",
+							"",
+							"if(!pm.environment.get('mockData')){",
+							"    pm.environment.set('mockData', JSON.stringify(initialMockData));",
+							"    pm.environment.set('userIndex', '0');",
+							"}",
+							"",
+							"let mockData = JSON.parse(pm.environment.get('mockData'));",
+							"let userIndex = +pm.environment.get('userIndex');",
+							"",
+							"let user = mockData[userIndex];",
+							"",
+							"for(let [key,val] of Object.entries(user)){",
+							"    pm.environment.set(key,val);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();",
+							"",
+							"pm.test(\"Check that affected rows is 1\", () => {",
+							"    pm.expect(response.affectedRows).to.equal(1);",
+							"})",
+							"",
+							"pm.test(\"Check that inserted row is > 0\", () => {",
+							"    pm.expect(response.insertId).to.be.above(0);",
+							"})",
+							"",
+							"pm.test(\"Check that status is 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200)",
+							"})",
+							"",
+							"let mockData = JSON.parse(pm.environment.get('mockData'));",
+							"let userIndex = +pm.environment.get('userIndex');",
+							"",
+							"mockData[userIndex].id = response.insertId;",
+							"",
+							"pm.environment.set('mockData', JSON.stringify(mockData));",
+							"",
+							"userIndex++;",
+							"",
+							"if(!mockData[userIndex]){",
+							"    pm.environment.set('userIndex', '0');",
+							"}",
+							"else{",
+							"    pm.environment.set('userIndex', userIndex);",
+							"    postman.setNextRequest('Create users');",
+							"};"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"firstName\": \"{{firstName}}\",\n  \"lastName\": \"{{lastName}}\",\n  \"phoneNumber\": \"{{phoneNumber}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let mockData = JSON.parse(pm.environment.get('mockData'));",
+							"let userIndex = +pm.environment.get('userIndex');",
+							"let user = mockData[userIndex];",
+							"",
+							"pm.environment.set('id', user.id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let mockData = JSON.parse(pm.environment.get('mockData'));",
+							"let userIndex = +pm.environment.get('userIndex');",
+							"let user = mockData[userIndex];",
+							"",
+							"let response = pm.response.json();",
+							"",
+							"pm.test(\"Check that status is 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200)",
+							"})",
+							"",
+							"pm.test(\"Expect db values to equal original values\", () => {",
+							"    let userWoPassword = {...user, password: null};",
+							"    let responseWoPassword = {...response, password: null};",
+							"    pm.expect(userWoPassword).to.deep.equal(responseWoPassword);",
+							"})",
+							"",
+							"userIndex++;",
+							"",
+							"if(!mockData[userIndex]){",
+							"    pm.environment.set('userIndex', '0');",
+							"}",
+							"else{",
+							"    pm.environment.set('userIndex', userIndex);",
+							"    postman.setNextRequest('Read users');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/api/users/{{id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"users",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let mockData = JSON.parse(pm.environment.get('mockData'));",
+							"let userIndex = +pm.environment.get('userIndex');",
+							"let user = mockData[userIndex];",
+							"",
+							"pm.environment.set('id', user.id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let mockData = JSON.parse(pm.environment.get('mockData'));",
+							"let userIndex = +pm.environment.get('userIndex');",
+							"",
+							"let response = pm.response.json();",
+							"",
+							"pm.test(\"Check that status is 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200)",
+							"})",
+							"",
+							"pm.test(\"Check that affected rows is 1\", () => {",
+							"    pm.expect(response.affectedRows).to.equal(1);",
+							"})",
+							"",
+							"userIndex++;",
+							"",
+							"if(!mockData[userIndex]){",
+							"    pm.environment.set('userIndex', '0');",
+							"}",
+							"else{",
+							"    pm.environment.set('userIndex', userIndex);",
+							"    postman.setNextRequest('Delete users');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/api/users/{{id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"users",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

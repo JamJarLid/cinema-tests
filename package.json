@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "test": "",
+    "test": "newman run api-tests/cinema-tests.postman_collection.json",
     "start": "concurrently \"npm:backend\" \"npm:dev\"",
     "seed-db": "cd _seed_db && node seeder.js",
     "backend": "cd backend && node index.js",
