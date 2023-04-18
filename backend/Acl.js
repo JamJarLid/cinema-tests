@@ -9,7 +9,7 @@ module.exports = class Acl {
     let role = req.session.user ?
       (req.session.user.role || 'logged in') :
       'not logged in';
-    
+
     console.log([
       'role ' + role,
       'user ' + JSON.stringify(req.session.user, '', ' '),
@@ -18,21 +18,28 @@ module.exports = class Acl {
       'method' + method,
       'isTable ' + isTable,
       'isView ' + isView
-    ].join('\n'))
+    ].join('\n'));
 
-    if (role === 'not logged in' && table === 'users' && method === 'POST') { 
+    // Admin gets full access
+    if (role === 'admin') {
       return true;
     }
 
-    if (role === 'not logged in' && method !== 'GET') {
-      return false
+    // Tables that are available to be viewed by everyone
+    if (['movies', 'screenings', 'movies_by_categories'].includes(table) && method === 'GET') {
+      return true;
+    }
+
+    // Not logged in can create user
+    if (role === 'not logged in' && table === 'users' && method === 'POST') {
+      return true;
     }
 
     if (role !== 'admin' && table === 'users') {
-      return false
+      return false;
     }
 
-    return true
+    return false;
   }
 
 }
