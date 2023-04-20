@@ -3,25 +3,34 @@ module.exports = class Acl {
   // Here you can implement ACL
   // return true = allowed, false = forbidden
 
-  // req.sesssion.user -> logged in user if any
+  // req.session.user -> logged in user if any
 
   static checkRoute(req, table, method, isTable, isView) {
     let role = req.session.user ?
-      (req.session.user.role || 'logged in') :
+      (req.session.user.userRole || 'logged in') :
       'not logged in';
+    
+    let allowedRoles = ['not logged in', 'logged in', 'admin'];
+    if (!allowedRoles.includes(role)) { role = 'not logged in'; }
 
     console.log([
       'role ' + role,
       'user ' + JSON.stringify(req.session.user, '', ' '),
       'url ' + req.url,
       'table ' + table,
-      'method' + method,
+      'method ' + method,
       'isTable ' + isTable,
-      'isView ' + isView
+      'isView ' + isView,
+      '--------------------------------------'
     ].join('\n'));
 
     // Admin gets full access
     if (role === 'admin') {
+      return true;
+    }
+
+    // GET tables and views available for all
+    if (table === 'tables_and_views' && method === 'GET') {
       return true;
     }
 
@@ -30,13 +39,20 @@ module.exports = class Acl {
       return true;
     }
 
+    // Not logged in can log in
+    if (role === 'not logged in' && table === 'login' && method === 'POST') {
+      return true;
+    }
+
     // Not logged in can create user
     if (role === 'not logged in' && table === 'users' && method === 'POST') {
       return true;
     }
 
-    if (role !== 'admin' && table === 'users') {
-      return false;
+    // Logged in user can see their own bookings
+    if (role === 'logged in' && table === 'bookings' && method === 'GET'
+         /* && req.session.user.id === booking.user or something*/) {
+      return true;
     }
 
     return false;
