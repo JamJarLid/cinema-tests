@@ -196,6 +196,7 @@
 					"script": {
 						"exec": [
 							"let booking = JSON.parse(pm.environment.get('mockData'));",
+							"",
 							"pm.environment.set('id', booking.bookingNumber);"
 						],
 						"type": "text/javascript"
@@ -213,9 +214,9 @@
 							"})",
 							"",
 							"pm.test(\"Check that the booking has two seats\", () =>{",
-							"    pm.expect(+res[0].seats[0]).to.equal(seatData[0].seatId)",
-							"    pm.expect(+res[0].seats[3]).to.equal(seatData[1].seatId)",
-							"    pm.expect(res[0].seats[4]).to.be.undefined",
+							"    pm.expect(res[0].seats).to.include(seatData[0].seatId);",
+							"    pm.expect(res[0].seats).to.include(seatData[1].seatId);",
+							"    pm.expect(res[0].seats[4]).to.be.undefined;",
 							"})"
 						],
 						"type": "text/javascript"
@@ -252,6 +253,65 @@
 					"query": [
 						{
 							"key": "bookingNumber",
+							"value": "{{id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read occupied seats",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let screening = JSON.parse(pm.environment.get('mockData'));",
+							"",
+							"pm.environment.set('id', screening.screeningId);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let res = pm.response.json();",
+							"let seatData = JSON.parse(pm.environment.get('seatData'));",
+							"",
+							"pm.test(\"Check that the response code is 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Check that the seats in seatData correspond with the occupied seats\", () => {",
+							"    pm.expect(res[0].occupiedSeats).to.include(seatData[0].seatId);",
+							"    pm.expect(res[0].occupiedSeats).to.include(seatData[1].seatId);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/api/occupied_seats/?screeningId={{id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"occupied_seats",
+						""
+					],
+					"query": [
+						{
+							"key": "screeningId",
 							"value": "{{id}}"
 						}
 					]
