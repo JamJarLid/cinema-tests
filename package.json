@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "test": "newman run api-tests/cinema-tests.postman_collection.json",
+    "test": "npm run test1 && npm run test2",
+    "test1": "newman run api-tests/cinema-tests.postman_collection.json",
+    "test2": "newman run api-tests/booking-tests.postman_collection.json",
     "start": "concurrently \"npm:backend\" \"npm:dev\"",
     "seed-db": "cd _seed_db && node seeder.js",
     "backend": "cd backend && node index.js",

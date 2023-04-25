@@ -55,7 +55,7 @@ module.exports = class Acl {
       return true;
     }
 
-    return false;
+    return true;
   }
 
 }
