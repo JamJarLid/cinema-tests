@@ -9,9 +9,11 @@ module.exports = class Acl {
     let role = req.session.user ?
       (req.session.user.userRole || 'logged in') :
       'not logged in';
-    
+
     let allowedRoles = ['not logged in', 'logged in', 'admin'];
     if (!allowedRoles.includes(role)) { role = 'not logged in'; }
+
+    method = method.toUpperCase();
 
     console.log([
       'role ' + role,
@@ -32,6 +34,9 @@ module.exports = class Acl {
     // GET tables and views available for all
     if (table === 'tables_and_views' && method === 'GET') {
       return true;
+    }
+    else {
+      console.log("NO IT WASNT", table, method)
     }
 
     // Tables that are available to be viewed by everyone
@@ -55,7 +60,12 @@ module.exports = class Acl {
       return true;
     }
 
-    return true;
+    //Logged in user can book tickets and seats
+    if (role === 'logged in' && ['bookings', 'bookingsXseats'].includes(table) && method === 'POST') {
+      return true
+    }
+
+    return false;
   }
 
 }
