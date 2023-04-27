@@ -798,5 +798,13 @@
     "firstName": "Eyde",
     "lastName": "Kynvin",
     "phoneNumber": "126-348-9036"
+  },
+  {
+    "id": 101,
+    "email": "espen.lever@gmail.com",
+    "password": "1234",
+    "firstName": "Espen",
+    "lastName": "Lever",
+    "phoneNumber": "136-348-9036"
   }
 ]
