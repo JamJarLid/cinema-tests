@@ -27,45 +27,45 @@ module.exports = class Acl {
     ].join('\n'));
 
     // Admin gets full access
-    if (role === 'admin') {
-      return true;
-    }
+    // if (role === 'admin') {
+    //   return true;
+    // }
 
-    // GET tables and views available for all
-    if (table === 'tables_and_views' && method === 'GET') {
-      return true;
-    }
-    else {
-      console.log("NO IT WASNT", table, method)
-    }
+    // // GET tables and views available for all
+    // if (table === 'tables_and_views' && method === 'GET') {
+    //   return true;
+    // }
+    // else {
+    //   console.log("NO IT WASNT", table, method)
+    // }
 
-    // Tables that are available to be viewed by everyone
-    if (['movies', 'screenings', 'movies_by_categories'].includes(table) && method === 'GET') {
-      return true;
-    }
+    // // Tables that are available to be viewed by everyone
+    // if (['movies', 'screenings', 'movies_by_categories'].includes(table) && method === 'GET') {
+    //   return true;
+    // }
 
-    // Not logged in can log in
-    if (role === 'not logged in' && table === 'login' && method === 'POST') {
-      return true;
-    }
+    // // Not logged in can log in
+    // if (role === 'not logged in' && table === 'login' && method === 'POST') {
+    //   return true;
+    // }
 
-    // Not logged in can create user
-    if (role === 'not logged in' && table === 'users' && method === 'POST') {
-      return true;
-    }
+    // // Not logged in can create user
+    // if (role === 'not logged in' && table === 'users' && method === 'POST') {
+    //   return true;
+    // }
 
-    // Logged in user can see their own bookings
-    if (role === 'logged in' && table === 'bookings' && method === 'GET'
-         /* && req.session.user.id === booking.user or something*/) {
-      return true;
-    }
+    // // Logged in user can see their own bookings
+    // if (role === 'logged in' && table === 'bookings' && method === 'GET'
+    //      /* && req.session.user.id === booking.user or something*/) {
+    //   return true;
+    // }
 
-    //Logged in user can book tickets and seats
-    if (role === 'logged in' && ['bookings', 'bookingsXseats'].includes(table) && method === 'POST') {
-      return true
-    }
+    // //Logged in user can book tickets and seats
+    // if (role === 'logged in' && ['bookings', 'bookingsXseats'].includes(table) && method === 'POST') {
+    //   return true
+    // }
 
-    return false;
+    return true;
   }
 
 }
