@@ -3,7 +3,8 @@
 		"_postman_id": "5f7849fc-04fb-49d3-b785-11004454aa9f",
 		"name": "Cinema-tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "24654429"
+		"_exporter_id": "24654429",
+		"_collection_link": "https://speeding-eclipse-347258.postman.co/workspace/Devops22~9fa41a8c-c9d8-4b52-ab5b-a380c17f2b78/collection/24654429-5f7849fc-04fb-49d3-b785-11004454aa9f?action=share&creator=24654429&source=collection_link"
 	},
 	"item": [
 		{
@@ -130,6 +131,144 @@
 		},
 		{
 			"name": "Read users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let mockData = JSON.parse(pm.environment.get('mockData'));",
+							"let userIndex = +pm.environment.get('userIndex');",
+							"let user = mockData[userIndex];",
+							"",
+							"pm.environment.set('id', user.id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let mockData = JSON.parse(pm.environment.get('mockData'));",
+							"let userIndex = +pm.environment.get('userIndex');",
+							"let user = mockData[userIndex];",
+							"",
+							"let response = pm.response.json();",
+							"",
+							"pm.test(\"Check that status is 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200)",
+							"})",
+							"",
+							"pm.test(\"Expect db values to equal original values\", () => {",
+							"    let userWoPassword = {...user, password: null, userRole: null};",
+							"    let responseWoPassword = {...response, password: null};",
+							"    console.log(userWoPassword, responseWoPassword);",
+							"    pm.expect(userWoPassword).to.deep.equal(responseWoPassword);",
+							"})",
+							"",
+							"userIndex++;",
+							"",
+							"if(!mockData[userIndex]){",
+							"    pm.environment.set('userIndex', '0');",
+							"}",
+							"else{",
+							"    pm.environment.set('userIndex', userIndex);",
+							"    postman.setNextRequest('Read users');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/api/users/{{id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"users",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let mockData = JSON.parse(pm.environment.get('mockData'));",
+							"let userIndex = +pm.environment.get('userIndex');",
+							"let user = mockData[userIndex];",
+							"let suffix = \"-Butt\";",
+							"",
+							"user.firstName = user.firstName.concat(suffix);",
+							"",
+							"for(let [key,val] of Object.entries(user)){",
+							"    pm.environment.set(key,val);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let mockData = JSON.parse(pm.environment.get('mockData'));",
+							"let userIndex = +pm.environment.get('userIndex');",
+							"let user = mockData[userIndex];",
+							"",
+							"let res = pm.response.json();",
+							"",
+							"pm.test(\"Check that status is 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"userIndex++;",
+							"",
+							"if(!mockData[userIndex]){",
+							"    pm.environment.set('userIndex', '0');",
+							"}",
+							"else{",
+							"    pm.environment.set('userIndex', userIndex);",
+							"    postman.setNextRequest('Read users');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/api/users/{{id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"users",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read users again",
 			"event": [
 				{
 					"listen": "prerequest",
