@@ -311,7 +311,7 @@
 							"}",
 							"else{",
 							"    pm.environment.set('userIndex', userIndex);",
-							"    postman.setNextRequest('Read users');",
+							"    postman.setNextRequest('Read users again');",
 							"}"
 						],
 						"type": "text/javascript"
