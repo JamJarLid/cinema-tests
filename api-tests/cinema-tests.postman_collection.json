@@ -213,6 +213,9 @@
 							"",
 							"user.firstName = user.firstName.concat(suffix);",
 							"",
+							"pm.environment.set('mockData', JSON.stringify(mockData));",
+							"pm.environment.set('id', user.id);",
+							"",
 							"for(let [key,val] of Object.entries(user)){",
 							"    pm.environment.set(key,val);",
 							"}"
@@ -241,7 +244,7 @@
 							"}",
 							"else{",
 							"    pm.environment.set('userIndex', userIndex);",
-							"    postman.setNextRequest('Read users');",
+							"    postman.setNextRequest('Update users');",
 							"}"
 						],
 						"type": "text/javascript"
@@ -251,6 +254,15 @@
 			"request": {
 				"method": "PUT",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"firstName\": \"{{firstName}}\",\n  \"lastName\": \"{{lastName}}\",\n  \"phoneNumber\": \"{{phoneNumber}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "http://localhost:4000/api/users/{{id}}",
 					"protocol": "http",
